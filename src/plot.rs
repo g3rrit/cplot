@@ -14,13 +14,16 @@ pub struct Plot {
     f: fn(Cpx) -> Option<Cpx>,
 }
 
+type Image_Buffer = im::ImageBuffer<Rgba<u8>, Vec<u8>>;
 impl Plot {
+
     pub fn new() -> Plot {
         Plot {
-            lb: Cpx::new(-10, -10),
-            rt: Cpx::new(10, 10),
+            lb: Cpx::new(-5, -5),
+            rt: Cpx::new(5, 5),
             f: |x| -> Option<Cpx> { 
-                Some(x * x * x) 
+                //Some(Cpx::sin(x) + Cpx::new(1,8) * Cpx::sin(x) + Cpx::new(1,16) * Cpx::sin(x))
+                Some(x)
             }
         }
     }
@@ -40,7 +43,7 @@ impl Plot {
         max
     }
     
-    fn draw_fn(&self, max: f64, canvas: &mut im::ImageBuffer<Rgba<u8>, Vec<u8>>) {
+    fn draw_fn(&self, max: f64, canvas: &mut Image_Buffer) {
         let diag = self.rt - self.lb;
         let (cw, ch) = canvas.dimensions();
         let dy = diag.r/(cw as f64);
@@ -49,22 +52,32 @@ impl Plot {
             for y in 0..ch {
                 canvas.put_pixel(x, y, 
                                  px_from_cpx((self.f)(self.lb + Cpx::new(dx * x as f64, dy * y as f64)), 
-                                             max));
+                                             max, 1.0));
             }
         }
     }
+    
+    fn draw_grid(&self, canvas: &mut Image_Buffer) {
+    }
 
-    pub fn update(&self, canvas: &mut im::ImageBuffer<Rgba<u8>, Vec<u8>>) {
+    pub fn update(&self, canvas: &mut Image_Buffer) {
         println!("updating canvas");
         let max: f64 = self.get_max();
         println!("Maximum: {}", max);
         self.draw_fn(max, canvas);
+        self.draw_grid(canvas);
     }
 }
 
-fn px_from_cpx(num: Option<Cpx>, max: f64) -> Rgba<u8> {
+fn px_from_cpx(num: Option<Cpx>, max: f64, line: f64) -> Rgba<u8> {
     match num {
-        Some(num) => hsv_to_rgb(num.phi(), 1.0,(num.abs() / max)),
+        Some(num) => {
+            let phi = num.phi();
+            let r = num.abs();
+            let s = ((r / line).sin()/2.0 + 0.5).sqrt(); //1.0 - r.fract() * r.fract() * r.fract();
+            let v = r / max;
+            hsv_to_rgb(phi, s , v)
+        }
         None      => im::Rgba([255, 255, 255, 255]), 
     }
 }

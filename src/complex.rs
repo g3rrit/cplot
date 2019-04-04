@@ -27,6 +27,15 @@ impl Cpx {
         }
         //self.r.atan2(self.c)
     }
+    
+    pub fn sin(n: Cpx) -> Cpx {
+        Cpx::new(n.r.sin() * n.c.cosh(),
+        n.r.cos() * n.c.sinh())
+    }
+    pub fn tan(n: Cpx) -> Option<Cpx> {
+        Cpx::new((2.0 * n.r).sin(), (2.0 * n.c).sinh()) /
+            Cpx::new((2.0 * n.r).cos(), (2.0 * n.c).cosh())
+    }
 }
 
 // -- ADDITION --------------------------
