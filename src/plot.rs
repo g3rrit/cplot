@@ -58,6 +58,7 @@ impl Plot {
     }
     
     fn draw_grid(&self, canvas: &mut Image_Buffer) {
+        
     }
 
     pub fn update(&self, canvas: &mut Image_Buffer) {

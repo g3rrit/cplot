@@ -39,7 +39,6 @@ fn main() {
     update(plot);
 }
 
-
 fn update(plot: Plot) {
     let opengl = OpenGL::V3_2;
     let mut window: PistonWindow = WindowSettings::new("CPLOT", (WINDOW_WIDTH, WINDOW_HEIGHT))
